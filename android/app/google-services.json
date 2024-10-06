@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "324883046691",
+    "project_id": "easyrsv-a11f9",
+    "storage_bucket": "easyrsv-a11f9.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:324883046691:android:4c698785002e902b1fec96",
+        "android_client_info": {
+          "package_name": "com.example.easyrsv"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDfKiW9-yY6_0g96GdYZilV45x0NK8tSwc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
