@@ -45,6 +45,11 @@ dependencies:
   firebase_auth_platform_interface: ^7.4.7
   service_worker: ^0.4.0
   api_service_helper: ^0.1.2
+  shared_preferences: ^2.3.2
+  shimmer: ^3.0.0
+  file_picker: ^8.1.2
+  country_code_picker: ^3.0.0
+  image_picker: ^1.1.2
 
 dev_dependencies:
   flutter_test:

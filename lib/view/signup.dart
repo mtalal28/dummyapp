@@ -24,8 +24,8 @@ class Signup extends StatelessWidget {
                   children: <Widget>[
                     Image.asset(
                       'assets/logo vector 2.png',
-                      width: 150,
-                      height: 150,
+                      width: 80,
+                      height: 80,
                       fit: BoxFit.cover,
                     ),
                     const Text(
@@ -64,7 +64,7 @@ class Signup extends StatelessWidget {
                     const SizedBox(height: 4),
                     const Center(
                       child: Text(
-                        'Are You A Hotel Manager or \nRestaurant Owner',
+                        'Are you a concierge or a Restaurant owner?',
                         style: TextStyle(
                             color: Color.fromARGB(255, 190, 188, 188)),
                       ),
@@ -76,15 +76,15 @@ class Signup extends StatelessWidget {
                         GestureDetector(
                           onTap: controller.selectOption1,
                           child: Obx(() => Container(
-                                width: 150,
-                                height: 150,
+                                width: 120,
+                                height: 120,
                                 decoration: BoxDecoration(
-                                  color: const Color(0xFF4e4e4e),
+                                  color: Colors.transparent,
                                   borderRadius: BorderRadius.circular(10),
                                   border: Border.all(
                                     color: controller.isOption1Selected.value
                                         ? const Color(0xFFD6B560)
-                                        : Colors.white,
+                                        :  const Color(0xFF595959),
                                     width: 1,
                                   ),
                                 ),
@@ -92,8 +92,8 @@ class Signup extends StatelessWidget {
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
                                     Container(
-                                      width: 60,
-                                      height: 60,
+                                      width: 40,
+                                      height: 40,
                                       decoration: const BoxDecoration(
                                         image: DecorationImage(
                                           image: AssetImage(
@@ -109,7 +109,7 @@ class Signup extends StatelessWidget {
                                         color: controller.isOption1Selected
                                                 .value
                                             ? const Color(0xFFD6B560)
-                                            : Colors.white,
+                                            :  const Color(0xFF595959),
                                       ),
                                     ),
                                   ],
@@ -119,15 +119,15 @@ class Signup extends StatelessWidget {
                         GestureDetector(
                           onTap: controller.selectOption2,
                           child: Obx(() => Container(
-                                width: 150,
-                                height: 150,
+                                width: 120,
+                                height: 120,
                                 decoration: BoxDecoration(
-                                  color: const Color(0xFF4e4e4e),
+                                  color: Colors.transparent,
                                   borderRadius: BorderRadius.circular(10),
                                   border: Border.all(
                                     color: controller.isOption2Selected.value
                                         ? const Color(0xFFD6B560)
-                                        : Colors.white,
+                                        : const Color(0xFF595959),
                                     width: 1,
                                   ),
                                 ),
@@ -135,8 +135,8 @@ class Signup extends StatelessWidget {
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
                                     Container(
-                                      width: 60,
-                                      height: 60,
+                                      width: 40,
+                                      height: 40,
                                       decoration: const BoxDecoration(
                                         image: DecorationImage(
                                           image: AssetImage(
@@ -152,7 +152,7 @@ class Signup extends StatelessWidget {
                                         color: controller.isOption2Selected
                                                 .value
                                             ? const Color(0xFFD6B560)
-                                            : Colors.white,
+                                            : Colors.grey,
                                       ),
                                     ),
                                   ],
@@ -174,7 +174,7 @@ class Signup extends StatelessWidget {
                             Get.snackbar(
                               'Error',
                               'Please select a role before proceeding.',
-                              snackPosition: SnackPosition.BOTTOM,
+                              snackPosition: SnackPosition.TOP,
                             );
                           }
                         },

@@ -18,13 +18,13 @@ class AutoSpacingPhoneNumberFormatter extends TextInputFormatter {
 
     // Format the text to match +92 331 431 7076
     if (text.length > 3) {
-      text = text.substring(0, 3) + ' ' + text.substring(3);  // +92 XXX
+      text = '${text.substring(0, 3)} ${text.substring(3)}';  // +92 XXX
     }
     if (text.length > 7) {
-      text = text.substring(0, 7) + ' ' + text.substring(7);  // +92 XXX XXX
+      text = '${text.substring(0, 7)} ${text.substring(7)}';  // +92 XXX XXX
     }
     if (text.length > 11) {
-      text = text.substring(0, 11) + ' ' + text.substring(11);  // +92 XXX XXX XXXX
+      text = '${text.substring(0, 11)} ${text.substring(11)}';  // +92 XXX XXX XXXX
     }
 
     // Limit to +92 XXX XXX XXXX (16 characters including spaces)

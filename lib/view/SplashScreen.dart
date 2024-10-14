@@ -1,9 +1,14 @@
+
+// ignore_for_file: file_names
+
 import 'package:flutter/material.dart';
+import 'package:get/get.dart'; // Import GetX package
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
 
   @override
+  // ignore: library_private_types_in_public_api
   _SplashScreenState createState() => _SplashScreenState();
 }
 
@@ -12,8 +17,9 @@ class _SplashScreenState extends State<SplashScreen> {
   void initState() {
     super.initState();
 
+    // Using GetX for navigation
     Future.delayed(const Duration(seconds: 5), () {
-      Navigator.pushReplacementNamed(context, 'signIn');
+      Get.offNamed('signIn'); 
     });
   }
 
@@ -26,7 +32,7 @@ class _SplashScreenState extends State<SplashScreen> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Padding(
-              padding: EdgeInsets.only(top: 50),
+              padding: const EdgeInsets.only(top: 50),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
@@ -37,11 +43,11 @@ class _SplashScreenState extends State<SplashScreen> {
                     fit: BoxFit.cover,
                   ),
                   const Text(
-                    'EASYRSV', // Replace with your desired text
+                    'EASYRSV', 
                     style: TextStyle(
                       fontSize: 25,
                       fontWeight: FontWeight.normal,
-                      color: const Color(0xFFD6B560),
+                      color:  Color(0xFFD6B560),
                     ),
                   ),
                 ],

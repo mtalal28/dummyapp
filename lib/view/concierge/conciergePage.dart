@@ -1,9 +1,11 @@
-import 'dart:core';
+// ignore_for_file: file_names
 
-import 'package:easyrsv/concierge/SignUpPage2.dart';
-import 'package:easyrsv/controller/concierge_form.dart';
-import 'package:easyrsv/widget.dart/autospacing.dart';
+import 'package:easyrsv/models/user_model.dart';
 import 'package:easyrsv/widget.dart/text_field_with_label.dart';
+import 'package:easyrsv/view/concierge/SignUpPage2.dart';
+import 'package:easyrsv/controller/concierge_form.dart';
+import 'package:easyrsv/controller/user_controller.dart';
+import 'package:easyrsv/widget.dart/autospacing.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -19,6 +21,15 @@ class ConciergePage extends StatefulWidget {
 
 class _ConciergePageState extends State<ConciergePage> {
   final ConciergeFormController controller = Get.put(ConciergeFormController());
+  final userController = Get.put(UserController());
+  // final _controllers = List.generate(16, (idx) => TextEditingController());
+
+  // @override
+  // void dispose() {
+  //   _controllers.asMap().forEach((i, e) => e.dispose());
+  //   fnameController.dispose();
+  //   super.dispose();
+  // }
 
   final TextEditingController fnameController = TextEditingController();
 
@@ -50,7 +61,9 @@ class _ConciergePageState extends State<ConciergePage> {
 
   final TextEditingController cityController = TextEditingController();
 
-  final TextEditingController location_coordinatesController = TextEditingController();
+  // ignore: non_constant_identifier_names
+  final TextEditingController location_coordinatesController =
+      TextEditingController();
 
   // final FirebaseAuth _auth = FirebaseAuth.instance;
   @override
@@ -112,7 +125,7 @@ class _ConciergePageState extends State<ConciergePage> {
                     isMandatory: true,
                     textInputAction: TextInputAction.next,
                     onChanged: (value) => controller.firstName.value = value,
-                    inputFormatters: [],
+                    inputFormatters: const [],
                   ),
                   TextFieldWithLabel(
                     controller: lnameController,
@@ -121,7 +134,7 @@ class _ConciergePageState extends State<ConciergePage> {
                     isMandatory: true,
                     textInputAction: TextInputAction.next,
                     onChanged: (value) => controller.lastName.value = value,
-                    inputFormatters: [],
+                    inputFormatters: const [],
                   ),
                   TextFieldWithLabel(
                     controller: familyController,
@@ -130,7 +143,7 @@ class _ConciergePageState extends State<ConciergePage> {
                     isMandatory: true,
                     textInputAction: TextInputAction.next,
                     onChanged: (value) => controller.familyName.value = value,
-                    inputFormatters: [],
+                    inputFormatters: const [],
                   ),
                   TextFieldWithLabel(
                     controller: businessController,
@@ -139,7 +152,7 @@ class _ConciergePageState extends State<ConciergePage> {
                     isMandatory: true,
                     textInputAction: TextInputAction.next,
                     onChanged: (value) => controller.businessName.value = value,
-                    inputFormatters: [],
+                    inputFormatters: const [],
                   ),
                   TextFieldWithLabel(
                     controller: emailController,
@@ -149,7 +162,7 @@ class _ConciergePageState extends State<ConciergePage> {
                     textInputAction: TextInputAction.next,
                     keyboardType: TextInputType.emailAddress,
                     onChanged: (value) => controller.email.value = value,
-                    inputFormatters: [],
+                    inputFormatters: const [],
                   ),
                   TextFieldWithLabel(
                     controller: phoneController,
@@ -159,7 +172,7 @@ class _ConciergePageState extends State<ConciergePage> {
                     keyboardType: TextInputType.number,
                     textInputAction: TextInputAction.next,
                     inputFormatters: [
-                      AutoSpacingPhoneNumberFormatter(),  
+                      AutoSpacingPhoneNumberFormatter(),
                     ],
                     onChanged: (value) => controller.phoneNo.value = value,
                   ),
@@ -172,7 +185,7 @@ class _ConciergePageState extends State<ConciergePage> {
                     keyboardType: TextInputType.number,
                     textInputAction: TextInputAction.next,
                     inputFormatters: [
-                      AutoSpacingPhoneNumberFormatter(),  
+                      AutoSpacingPhoneNumberFormatter(),
                     ],
                     onChanged: (value) => controller.mobileNumber.value = value,
                   ),
@@ -215,7 +228,7 @@ class _ConciergePageState extends State<ConciergePage> {
                     isMandatory: true,
                     textInputAction: TextInputAction.next,
                     onChanged: (value) => controller.address.value = value,
-                    inputFormatters: [],
+                    inputFormatters: const [],
                   ),
                   TextFieldWithLabel(
                     controller: referralController,
@@ -223,7 +236,7 @@ class _ConciergePageState extends State<ConciergePage> {
                     hint: 'Enter your referral code',
                     textInputAction: TextInputAction.next,
                     onChanged: (value) => controller.referralCode.value = value,
-                    inputFormatters: [],
+                    inputFormatters: const [],
                   ),
                   TextFieldWithLabel(
                     controller: countryController,
@@ -232,7 +245,7 @@ class _ConciergePageState extends State<ConciergePage> {
                     textInputAction: TextInputAction.next,
                     isMandatory: true,
                     onChanged: (value) => controller.country.value = value,
-                    inputFormatters: [],
+                    inputFormatters: const [],
                   ),
                   TextFieldWithLabel(
                     controller: stateController,
@@ -241,7 +254,7 @@ class _ConciergePageState extends State<ConciergePage> {
                     textInputAction: TextInputAction.next,
                     isMandatory: true,
                     onChanged: (value) => controller.state.value = value,
-                    inputFormatters: [],
+                    inputFormatters: const [],
                   ),
                   TextFieldWithLabel(
                     controller: cityController,
@@ -250,7 +263,7 @@ class _ConciergePageState extends State<ConciergePage> {
                     isMandatory: true,
                     textInputAction: TextInputAction.next,
                     onChanged: (value) => controller.city.value = value,
-                    inputFormatters: [],
+                    inputFormatters: const [],
                   ),
                   TextFieldWithLabel(
                     controller: location_coordinatesController,
@@ -258,8 +271,9 @@ class _ConciergePageState extends State<ConciergePage> {
                     hint: 'Enter your location',
                     isMandatory: true,
                     textInputAction: TextInputAction.next,
-                    onChanged: (value) => controller.location_coordinates.value = value,
-                    inputFormatters: [],
+                    onChanged: (value) =>
+                        controller.location_coordinates.value = value,
+                    inputFormatters: const [],
                   ),
 
                   const SizedBox(height: 30),
@@ -267,8 +281,9 @@ class _ConciergePageState extends State<ConciergePage> {
                     child: ElevatedButton(
                       onPressed: () {
                         if (_validateFields()) {
-                          Get.to(() =>
-                              SignUpPage2(phoneNo: controller.phoneNo.value, email:controller.email.value));
+                          Get.to(() => SignUpPage2(
+                              phoneNo: controller.phoneNo.value,
+                              email: controller.email.value));
                         }
                       },
                       style: ElevatedButton.styleFrom(
@@ -301,9 +316,8 @@ class _ConciergePageState extends State<ConciergePage> {
 
   // Validation method for mandatory fields and format checks
   bool _validateFields() {
-
     if (controller.firstName.value.isEmpty ||
-         controller.lastName.value.isEmpty ||
+        controller.lastName.value.isEmpty ||
         controller.familyName.value.isEmpty ||
         controller.businessName.value.isEmpty ||
         controller.email.value.isEmpty ||
@@ -331,7 +345,6 @@ class _ConciergePageState extends State<ConciergePage> {
       return false;
     }
 
-
     if (!RegExp(r'^\+92 \d{3} \d{3} \d{4}$')
         .hasMatch(controller.mobileNumber.value)) {
       Get.snackbar(
@@ -341,7 +354,6 @@ class _ConciergePageState extends State<ConciergePage> {
       );
       return false;
     }
-
 
     if (!RegExp(r'^\+92 \d{3} \d{3} \d{4}$')
         .hasMatch(controller.phoneNo.value)) {
@@ -368,6 +380,31 @@ class _ConciergePageState extends State<ConciergePage> {
           backgroundColor: Colors.red);
       return false;
     }
+
+    userController.setUser(
+      UserModel(
+        businessName: businessController.text.trim(),
+        familyName: familyController.text.trim(),
+        status: stateController.text.trim() == "1",
+        fname: fnameController.text.trim(),
+        email: emailController.text.trim(),
+        lname: lnameController.text.trim(),
+        dob: dobController.text.trim(),
+        address: AddressModel(
+          location: location_coordinatesController.text.trim(),
+          refCode: referralController.text.trim(),
+          address: addressController.text.trim(),
+          country: countryController.text.trim(),
+          state: stateController.text.trim(),
+          city: cityController.text.trim(),
+        ),
+        phone: PhoneModel(
+          mobileNumber: mobileNumberController.text.trim(),
+          phoneNumber: phoneController.text.trim(),
+          code: mobilecodeController.text.trim(),
+        ),
+      ),
+    );
 
     return true;
   }
@@ -414,7 +451,6 @@ class _ConciergePageState extends State<ConciergePage> {
 //   return true;
 // }
 
-
 class DateFieldWithIcon extends StatefulWidget {
   final String label;
   final String hint;
@@ -433,6 +469,7 @@ class DateFieldWithIcon extends StatefulWidget {
   }) : super(key: key);
 
   @override
+  // ignore: library_private_types_in_public_api
   _DateFieldWithIconState createState() => _DateFieldWithIconState();
 }
 
@@ -469,9 +506,9 @@ class _DateFieldWithIconState extends State<DateFieldWithIcon> {
             );
             if (date != null) {
               setState(() {
-                selectedDate = date; 
+                selectedDate = date;
               });
-              widget.onDateSelected(date); 
+              widget.onDateSelected(date);
             }
           },
           child: Container(
@@ -502,3 +539,22 @@ class _DateFieldWithIconState extends State<DateFieldWithIcon> {
     );
   }
 }
+
+/**
+ * Screen A -> User Name, Email
+ * emailController
+ * nameController
+ * 
+ * dispose() {
+ *  nameController.dispose();
+ *  emailController.dispose();
+ * }
+ * 
+ * (continue) -> GetxController (UserController)
+ * 
+ * Screen B -> User Address
+ * streetController
+ * houseNoController
+ * 
+ * 
+ */

@@ -1,21 +1,74 @@
-// sign_in_controller.dart
+// import 'dart:developer';
 
+// import 'package:easyrsv/services/ApiService.dart';
+// import 'package:get/get.dart';
+
+
+// class SignInController extends GetxController {
+//   var isLoading = false.obs;
+//   var obscureText = true.obs;
+
+//   void toggleObscureText() {
+//     obscureText.value = !obscureText.value;
+//   }
+
+//   Future<void> signIn(String email, String password) async {
+//     isLoading.value = true;
+
+    
+//     final response = await ApiService.loginemail(email, password);
+
+//     if (response.success) {
+      
+//       log('User ID: ${response.id}');
+//       log('Token: ${response.token}');
+
+//       Get.offNamed('admin');
+//     } else {
+     
+//       Get.snackbar('Login Failed', response.message);
+//     }
+
+//     isLoading.value = false;
+//   }
+// }
+
+
+
+import 'dart:developer';
+
+import 'package:easyrsv/services/ApiService.dart';
 import 'package:get/get.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class SignInController extends GetxController {
-  // Observables
-  var email = ''.obs;
-  var password = ''.obs;
-  var obscureText = true.obs; // To manage password visibility
+  var isLoading = false.obs;
+  var obscureText = true.obs;
 
-  // Toggle password visibility
   void toggleObscureText() {
     obscureText.value = !obscureText.value;
   }
 
-  // Function for signing in (Add actual logic)
-  void signIn() {
-    // Perform sign-in operation here, using email.value and password.value
-    print('Email: ${email.value}, Password: ${password.value}');
+  Future<void> signIn(String email, String password) async {
+    isLoading.value = true;
+
+    final response = await ApiService.loginemail(email, password);
+
+    if (response.success) {
+      log('User ID: ${response.id}');
+      log('Token: ${response.token}');
+
+      // Save token in SharedPreferences
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+     await prefs.setString('user_token', response.token ?? '');
+      
+      Get.offNamed('admin');
+    } else {
+      Get.snackbar('Login Failed', response.message);
+    }
+
+    isLoading.value = false;
   }
 }
+
+

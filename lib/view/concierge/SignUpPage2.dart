@@ -1,4 +1,8 @@
-import 'package:easyrsv/concierge/ApiService.dart';
+// ignore_for_file: file_names
+
+import 'dart:developer';
+
+import 'package:easyrsv/services/ApiService.dart';
 import 'package:easyrsv/controller/concierge_form.dart';
 import 'package:easyrsv/widget.dart/text_field_with_label.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -14,9 +18,10 @@ class SignUpPage2 extends StatelessWidget {
   final String phoneNo;
   final String email;
 
-  SignUpPage2({required this.phoneNo, required this.email});
+  SignUpPage2({super.key, required this.phoneNo, required this.email});
 
   final TextEditingController passwordController = TextEditingController();
+  // ignore: non_constant_identifier_names
   final TextEditingController ConfirmpassController = TextEditingController();
   final TextEditingController banknameController = TextEditingController();
   final TextEditingController accountController = TextEditingController();
@@ -77,7 +82,7 @@ class SignUpPage2 extends StatelessWidget {
                     textInputAction: TextInputAction.next, 
                     onChanged: (value) {
                       controller.password.value = value;
-                    }, inputFormatters: [],
+                    }, inputFormatters: const [],
                   ),
 
                   // Confirm Password Field
@@ -89,7 +94,7 @@ class SignUpPage2 extends StatelessWidget {
                     keyboardType: TextInputType.text,
                     textInputAction: TextInputAction.next, 
                     onChanged: (value) =>
-                        controller.confirmPassword.value = value, inputFormatters: [],
+                        controller.confirmPassword.value = value, inputFormatters:const  [],
                   ),
 
                   const SizedBox(height: 30),
@@ -145,7 +150,8 @@ class SignUpPage2 extends StatelessWidget {
                             isMandatory: true,
                             keyboardType: TextInputType.text,
                             textInputAction: TextInputAction.next, 
-                            onChanged: (value) => controller.bank.value = value, inputFormatters: [],
+                            onChanged: (value) => controller.bank.value = value, 
+                            inputFormatters: const [],
                           ),
                           TextFieldWithLabel(
                             controller: accountController,
@@ -155,7 +161,7 @@ class SignUpPage2 extends StatelessWidget {
                             keyboardType: TextInputType.text,
                             textInputAction: TextInputAction.next, 
                             onChanged: (value) =>
-                                controller.account.value = value, inputFormatters: [],
+                                controller.account.value = value, inputFormatters: const [],
                           ),
                           TextFieldWithLabel(
                             controller: cardholderController,
@@ -165,7 +171,7 @@ class SignUpPage2 extends StatelessWidget {
                             textInputAction: TextInputAction.next, 
                             keyboardType: TextInputType.text,
                             onChanged: (value) =>
-                                controller.cardHolder.value = value, inputFormatters: [],
+                                controller.cardHolder.value = value, inputFormatters: const [],
                           ),
                           const SizedBox(height: 30),
                         ],
@@ -301,7 +307,7 @@ class SignUpPage2 extends StatelessWidget {
         },
         
         codeSent: (String verificationId, int? resendToken) {
-          print('vvvvvvvvvvvvv $verificationId');
+          log('vvvvvvvvvvvvv $verificationId');
           controller.isLoading.value = false;
           Get.toNamed('/OtpVerification', arguments: {
             'phoneNumber': phoneNo,
@@ -347,7 +353,7 @@ class SignUpPage2 extends StatelessWidget {
           backgroundColor: Colors.red,
         );
       }
-      print('${response.message} hehehe');
+      log('${response.message} hehehe');
     }
   } catch (e) {
     controller.isLoading.value = false;
@@ -357,7 +363,7 @@ class SignUpPage2 extends StatelessWidget {
       snackPosition: SnackPosition.TOP,
       backgroundColor: Colors.red,
     );
-    print('$e');
+    log('$e');
   }
 }
 
@@ -370,7 +376,7 @@ class PaymentOption extends StatelessWidget {
   final String label;
   final bool isSelected;
 
-  const PaymentOption({
+  const PaymentOption({super.key, 
     required this.icon,
     required this.label,
     required this.isSelected,

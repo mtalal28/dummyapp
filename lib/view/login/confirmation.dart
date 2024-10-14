@@ -46,13 +46,13 @@ class ConfirmationPage extends StatelessWidget {
             ),
           ),
           
-          // Login Now button at the bottom
+         
           Padding(
-            padding: const EdgeInsets.only(bottom: 30), // Adjust padding from the bottom
-            child: Center( // Center the button horizontally
+            padding: const EdgeInsets.only(bottom: 30), 
+            child: Center( 
               child: ElevatedButton(
                 onPressed: () {
-                  Get.toNamed('signIn'); // Navigate to the sign-in page
+                  Get.toNamed('signIn'); 
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFFD6B560),

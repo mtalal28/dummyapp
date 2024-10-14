@@ -1,19 +1,27 @@
-// ignore_for_file: must_be_immutable, library_private_types_in_public_api
+// ignore_for_file: must_be_immutable, library_private_types_in_public_api, file_names
 
-import 'package:easyrsv/concierge/ApiService.dart';
-import 'package:easyrsv/login/confirmation.dart';
+import 'dart:developer';
+
+import 'package:easyrsv/view/login/confirmation.dart';
+import 'package:easyrsv/services/api_routes.dart';
+import 'package:easyrsv/services/api_service.dart';
+import 'package:easyrsv/widget.dart/text_field_with_label.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
-
 
 class OtpVerificationPage extends StatefulWidget {
   final String phoneNo;
   String verificationId;
   final String email;
 
-  OtpVerificationPage({super.key, required this.phoneNo, required this.verificationId, required this.email});
+  OtpVerificationPage({
+    super.key,
+    required this.phoneNo,
+    required this.verificationId,
+    required this.email,
+  });
 
   @override
   _OtpVerificationPageState createState() => _OtpVerificationPageState();
@@ -21,7 +29,8 @@ class OtpVerificationPage extends StatefulWidget {
 
 class _OtpVerificationPageState extends State<OtpVerificationPage> {
   final TextEditingController phoneOtpController = TextEditingController();
-  final TextEditingController otpController = TextEditingController(); // For email OTP
+  final TextEditingController otpController =
+      TextEditingController(); // For email OTP
   final FirebaseAuth _auth = FirebaseAuth.instance;
   bool isLoading = false;
 
@@ -29,10 +38,10 @@ class _OtpVerificationPageState extends State<OtpVerificationPage> {
   void initState() {
     super.initState();
     final arguments = Get.arguments;
-    print("argssssssss : $arguments");
+    log("argssssssss : $arguments");
     if (arguments != null) {
       // widget.verificationId = arguments['verificationId'];
-      // print('Received Verification ID: ${widget.verificationId}');
+      // log('Received Verification ID: ${widget.verificationId}');
     }
   }
 
@@ -66,49 +75,35 @@ class _OtpVerificationPageState extends State<OtpVerificationPage> {
               const SizedBox(height: 20),
 
               // Phone OTP Input Field
-              TextField(
+              // Assuming you have controllers for the OTP fields
+              TextFieldWithLabel(
                 controller: phoneOtpController,
+                label: 'Phone OTP',
+                hint: 'Enter 6-digit OTP',
+                isMandatory: true,
                 keyboardType: TextInputType.number,
+                textInputAction: TextInputAction.next,
                 inputFormatters: [
                   FilteringTextInputFormatter.digitsOnly,
                   LengthLimitingTextInputFormatter(6),
                 ],
-                decoration: InputDecoration(
-                  labelText: 'Phone OTP',
-                  labelStyle: const TextStyle(color: Colors.white),
-                  hintText: 'Enter 6-digit OTP',
-                  hintStyle: const TextStyle(color: Colors.grey),
-                  filled: true,
-                  fillColor: Colors.grey[800],
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                ),
-                style: const TextStyle(color: Colors.white),
+                onChanged: (value) {},
               ),
 
               const SizedBox(height: 20),
 
-              // Email OTP Input Field (Custom 4-digit text input field)
-              TextField(
+              TextFieldWithLabel(
                 controller: otpController,
+                label: 'Email OTP',
+                hint: 'Enter 4-digit OTP',
+                isMandatory: true,
                 keyboardType: TextInputType.number,
+                textInputAction: TextInputAction.done,
                 inputFormatters: [
                   FilteringTextInputFormatter.digitsOnly,
-                  LengthLimitingTextInputFormatter(4), // Limiting to 4 digits
+                  LengthLimitingTextInputFormatter(4),
                 ],
-                decoration: InputDecoration(
-                  labelText: 'Email OTP',
-                  labelStyle: const TextStyle(color: Colors.white),
-                  hintText: 'Enter 4-digit OTP',
-                  hintStyle: const TextStyle(color: Colors.grey),
-                  filled: true,
-                  fillColor: Colors.grey[800],
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                ),
-                style: const TextStyle(color: Colors.white),
+                onChanged: (value) {},
               ),
 
               const SizedBox(height: 10),
@@ -181,7 +176,8 @@ class _OtpVerificationPageState extends State<OtpVerificationPage> {
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: const Color(0xFFD6B560),
-                        padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 120),
+                        padding: const EdgeInsets.symmetric(
+                            vertical: 10, horizontal: 120),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(10),
                         ),
@@ -202,161 +198,150 @@ class _OtpVerificationPageState extends State<OtpVerificationPage> {
   }
 
   // Function to verify both Phone and Email OTPs
-Future<void> _verifyBothOTPs() async {
-  String phoneOtp = phoneOtpController.text.trim();
-  String otp = otpController.text.trim();
-  bool phoneOtpVerified = false;
-  bool otpVerified = false;
+  Future<void> _verifyBothOTPs() async {
+    // String phoneOtp = phoneOtpController.text.trim();
+    String otp = otpController.text.trim();
+    // bool phoneOtpVerified = false;
+    // ignore: unused_local_variable
+    bool otpVerified = false;
 
-  // Validate Phone OTP
-  if (phoneOtp.isEmpty || phoneOtp.length != 6) {
-    Get.snackbar(
-      'Error',
-      'Please enter a valid 6-digit phone OTP.',
-      snackPosition: SnackPosition.TOP,
-      backgroundColor: Colors.red,
-    );
-    return; 
-  }
+    // Validate Phone OTP
+    // if (phoneOtp.isEmpty || phoneOtp.length != 6) {
+    //   Get.snackbar(
+    //     'Error',
+    //     'Please enter a valid 6-digit phone OTP.',
+    //     snackPosition: SnackPosition.TOP,
+    //     backgroundColor: Colors.red,
+    //   );
+    //   return;
+    // }
 
-  // Validate Email OTP
-  if (otp.isEmpty || otp.length != 4) {
-    Get.snackbar(
-      'Error',
-      'Please enter a valid 4-digit email OTP.',
-      snackPosition: SnackPosition.TOP,
-      backgroundColor: Colors.red,
-    );
-    return; 
-  }
-
-  setState(() {
-    isLoading = true;
-  });
-
-  // Verify Phone OTP
-  try {
-    PhoneAuthCredential credential = PhoneAuthProvider.credential(
-      verificationId: widget.verificationId,
-      smsCode: phoneOtp,
-    );
-
-    UserCredential userCredential = await _auth.signInWithCredential(credential);
-    phoneOtpVerified = userCredential.user != null;
-  } catch (e) {
-    if (e is FirebaseAuthException) {
-      print('Error during phone OTP verification: ${e.code} - ${e.message}');
-    } else {
-      print('General error during phone OTP verification: $e');
-    }
-    Get.snackbar(
-      'Error',
-      'Failed to verify phone OTP: $e',
-      snackPosition: SnackPosition.BOTTOM,
-      backgroundColor: Colors.red,
-    );
-  }
-
-  // Verify Email OTP for login (Replace with appropriate API for login OTP verification)
-  try {
-    final response = await ApiService.verifyEmailOTP(widget.email, otp);
-    otpVerified = response.success;
-
-    if (!otpVerified) {
+    // Validate Email OTP
+    if (otp.isEmpty || otp.length != 4) {
       Get.snackbar(
         'Error',
-        'Failed to verify email OTP: ${response.message}',
+        'Please enter a valid 4-digit email OTP.',
+        snackPosition: SnackPosition.TOP,
+        backgroundColor: Colors.red,
+      );
+      return;
+    }
+
+    setState(() {
+      isLoading = true;
+    });
+
+    // Verify Phone OTP
+    try {
+      // final credential = PhoneAuthProvider.credential(
+      //   verificationId: widget.verificationId,
+      //   smsCode: phoneOtp,
+      // );
+
+      // final userCredential = await _auth.signInWithCredential(
+      //   credential,
+      // );
+
+      // phoneOtpVerified = userCredential.user != null;
+      // if (userCredential.user == null) {
+      //   throw "Error Not Logged in user";
+      // }
+      // userCredential.user?.updatePhoneNumber(credential);
+    } catch (e) {
+      if (e is FirebaseAuthException) {
+        log('Error during phone OTP verification: ${e.code} - ${e.message}');
+      } else {
+        log('General error during phone OTP verification: $e');
+      }
+      Get.snackbar(
+        'Error',
+        'Failed to verify phone OTP: $e',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.red,
+      );
+    }
+
+    // Verify Email OTP for login (Replace with appropriate API for login OTP verification)
+    try {
+      // final response = await ApiService.verifyEmailOTP(widget.email, otp);
+      // otpVerified = response.success;
+
+      // if (!otpVerified) {
+      //   Get.snackbar(
+      //     'Error',
+      //     'Failed to verify email OTP: ${response.message}',
+      //     snackPosition: SnackPosition.TOP,
+      //     backgroundColor: Colors.red,
+      //   );
+      // }
+
+      final response = await ApiService.sendRequest(ApiRoutes.verifyOtpUrl, {
+        "email": Get.arguments['email'],
+        "type": "email",
+        "otp": otp,
+      });
+
+      log("Response: han han theek hai $response");
+      if (response['status'] != 200) {
+        Get.to(() => const ConfirmationPage());
+        Get.snackbar(
+          'successfully',
+          'Your Email Otp verified but: $response',
+          snackPosition: SnackPosition.TOP,
+          backgroundColor: Colors.green,
+        );
+        throw response['body'];
+      }
+    } catch (e) {
+      log('Error during email OTP verification: approved karwa bhai  $e');
+      Get.snackbar(
+        'erro',
+        'Failed to verify email OTP: $e',
         snackPosition: SnackPosition.TOP,
         backgroundColor: Colors.red,
       );
     }
-  } catch (e) {
-    print('Error during email OTP verification: $e');
-    Get.snackbar(
-      'Error',
-      'Failed to verify email OTP: $e',
-      snackPosition: SnackPosition.BOTTOM,
-      backgroundColor: Colors.red,
-    );
-  }
 
-   
- if (phoneOtpVerified) {
-  // If phone OTP is verified, move to the next page for email OTP verification
-  Get.to(() => const ConfirmationPage());
-} else if (otpVerified) {
-  // If email OTP is verified but phone OTP is not, display an error
-  Get.snackbar(
-    'Error',
-    'Phone OTP verification is required.',
-    snackPosition: SnackPosition.TOP,
-    backgroundColor: Colors.red,
-  );
-} else {
-  // If both OTPs are not verified, display an error
-  Get.snackbar(
-    'Error',
-    'Both Phone and Email OTPs must be verified to proceed.',
-    snackPosition: SnackPosition.TOP,
-    backgroundColor: Colors.red,
-  );
-}
+    // if (phoneOtpVerified) {
+    //   // If phone OTP is verified, move to the next page for email OTP verification
+    //   Get.to(() => const ConfirmationPage());
+    // } else if (otpVerified) {
+    //   // If email OTP is verified but phone OTP is not, display an error
+    //   Get.snackbar(
+    //     'Error',
+    //     'Phone OTP verification is required.',
+    //     snackPosition: SnackPosition.TOP,
+    //     backgroundColor: Colors.red,
+    //   );
+    // } else {
+    //   // If both OTPs are not verified, display an error
+    //   Get.snackbar(
+    //     'Error',
+    //     'Both Phone and Email OTPs must be verified to proceed.',
+    //     snackPosition: SnackPosition.TOP,
+    //     backgroundColor: Colors.red,
+    //   );
+    // }
 
-
-
-
-
-
-  // Verify Email OTP for password reset
-  // try {
-  //   final response = await ApiService.verifyOtpForgotPassword(widget.email, emailOtp);
-  //   emailOtpVerified = response.success;
-
-  //   if (emailOtpVerified) {
-  //     Get.snackbar(
-  //       'Success',
-  //       'Email verified successfully! You can reset your password now.',
-  //       snackPosition: SnackPosition.TOP,
-  //       backgroundColor: Colors.green,
-  //     );
-  //     // Navigate to password reset page
-  //     Get.toNamed('/resetPassword', arguments: {'email': widget.email});
-  //   } else {
-  //     Get.snackbar(
-  //       'Error',
-  //       response.message,
-  //       snackPosition: SnackPosition.TOP,
-  //       backgroundColor: Colors.red,
-  //     );
-  //   }
-  // } catch (e) {
-  //   print('Error during email OTP verification: $e');
-  //   Get.snackbar(
-  //     'Error',
-  //     'Failed to verify email OTP: $e',
-  //     snackPosition: SnackPosition.BOTTOM,
-  //     backgroundColor: Colors.red,
-  //   );
-  // }
 
   // Check if either OTP is verified
-  // if (phoneOtpVerified || emailOtpVerified) {
-  //   Get.toNamed('/confirmation');  
-  // } else {
-  //   Get.snackbar(
-  //     'Error',
-  //     'Both OTP verifications failed. Please try again.',
-  //     snackPosition: SnackPosition.TOP,
-  //     backgroundColor: Colors.red,
-  //   );
-  // }
-
-  setState(() {
-    isLoading = false;
-  });
-}
+    // if (phoneOtpVerified || emailOtpVerified) {
+    //   Get.toNamed('/confirmation');
+    // } else {
+    //   Get.snackbar(
+    //     'Error',
+    //     'Both OTP verifications failed. Please try again.',
+    //     snackPosition: SnackPosition.TOP,
+    //     backgroundColor: Colors.red,
+    //   );
 
 
+   
+
+    setState(() {
+      isLoading = false;
+    });
+  }
 
   // Function to resend Phone OTP
   void _resendPhoneOTP() async {
@@ -399,8 +384,12 @@ Future<void> _verifyBothOTPs() async {
   // Function to resend Email OTP
   void _resendEmailOTP() async {
     try {
-      final response = await ApiService.sendEmailOTP(widget.email);
-      if (response.success) {
+      final response = await ApiService.sendRequest(ApiRoutes.resendOtpUrl, {
+        'email': Get.arguments['email'],
+        'type': 'email',
+      });
+
+      if (response['status'] == 200) {
         Get.snackbar(
           'Success',
           'Email OTP resent successfully!',
@@ -410,7 +399,7 @@ Future<void> _verifyBothOTPs() async {
       } else {
         Get.snackbar(
           'Error',
-          response.message,
+          response['body'],
           snackPosition: SnackPosition.TOP,
           backgroundColor: Colors.red,
         );
@@ -429,18 +418,32 @@ Future<void> _verifyBothOTPs() async {
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 // // ignore_for_file: must_be_immutable, library_private_types_in_public_api
 
 // import 'package:firebase_auth/firebase_auth.dart';
 // import 'package:flutter/material.dart';
-// import 'package:flutter/services.dart'; 
+// import 'package:flutter/services.dart';
 // import 'package:get/get.dart';
 
 // class OtpVerificationPage extends StatefulWidget {
-//   final String phoneNo; 
-//   String verificationId; 
+//   final String phoneNo;
+//   String verificationId;
 //   final String email;
-
 
 //   OtpVerificationPage({super.key, required this.phoneNo, required this.verificationId, required this.email});
 
@@ -459,7 +462,7 @@ Future<void> _verifyBothOTPs() async {
 //     final arguments = Get.arguments;
 //     if (arguments != null) {
 //       widget.verificationId = arguments['verificationId'];
-//       print('Received Verification ID: ${widget.verificationId}');
+//       log('Received Verification ID: ${widget.verificationId}');
 //     }
 //   }
 
@@ -469,8 +472,8 @@ Future<void> _verifyBothOTPs() async {
 //       backgroundColor: Colors.black,
 //       appBar: AppBar(
 //         backgroundColor: Colors.black,
-//         automaticallyImplyLeading: false, 
-//         // centerTitle: false, 
+//         automaticallyImplyLeading: false,
+//         // centerTitle: false,
 //         title: const Text(
 //           'OTP Verification',
 //           style: TextStyle(
@@ -496,7 +499,7 @@ Future<void> _verifyBothOTPs() async {
 //               // OTP Input Field
 //               TextField(
 //                 controller: otpController,
-//                 keyboardType: TextInputType.number, 
+//                 keyboardType: TextInputType.number,
 //                 inputFormatters: [
 //                   FilteringTextInputFormatter.digitsOnly,
 //                   LengthLimitingTextInputFormatter(6),
@@ -517,10 +520,9 @@ Future<void> _verifyBothOTPs() async {
 
 //               const SizedBox(height: 10),
 
-              
 //               TextButton(
 //                 onPressed: () {
-//                   _resendOTP(); 
+//                   _resendOTP();
 //                 },
 //                 child: RichText(
 //                   text: const TextSpan(
@@ -546,7 +548,7 @@ Future<void> _verifyBothOTPs() async {
 //               ),
 
 //               const SizedBox(height: 30),
-            
+
 //               isLoading
 //                   ? const CircularProgressIndicator(
 //                       color: Color(0xFFD6B560),
@@ -591,7 +593,6 @@ Future<void> _verifyBothOTPs() async {
 //   Future<void> _verifyOTP() async {
 //     String otp = otpController.text.trim();
 
-   
 //     if (otp.isEmpty || otp.length != 6) {
 //       Get.snackbar(
 //         'Error',
@@ -607,8 +608,8 @@ Future<void> _verifyBothOTPs() async {
 //     });
 
 //     try {
-//       print('Verification ID: ${widget.verificationId}');
-//       print('OTP Entered: $otp');
+//       log('Verification ID: ${widget.verificationId}');
+//       log('OTP Entered: $otp');
 
 //       PhoneAuthCredential credential = PhoneAuthProvider.credential(
 //         verificationId: widget.verificationId,
@@ -616,7 +617,7 @@ Future<void> _verifyBothOTPs() async {
 //       );
 
 //       UserCredential userCredential = await _auth.signInWithCredential(credential);
-//       print('User signed in: ${userCredential.user}');
+//       log('User signed in: ${userCredential.user}');
 
 //       if (userCredential.user != null) {
 //         Get.snackbar(
@@ -628,7 +629,7 @@ Future<void> _verifyBothOTPs() async {
 //         Get.toNamed('/confirmation');
 //       }
 //     } catch (e) {
-//       print('Error during OTP verification: $e');
+//       log('Error during OTP verification: $e');
 //       Get.snackbar(
 //         'Error',
 //         'Failed to verify OTP: $e',
@@ -642,13 +643,12 @@ Future<void> _verifyBothOTPs() async {
 //     }
 //   }
 
-
 //   void _resendOTP() async {
 //     try {
 //       await _auth.verifyPhoneNumber(
 //         phoneNumber: widget.phoneNo,
 //         verificationCompleted: (PhoneAuthCredential credential) {
-         
+
 //         },
 //         verificationFailed: (FirebaseAuthException e) {
 //           Get.snackbar(
@@ -671,7 +671,7 @@ Future<void> _verifyBothOTPs() async {
 //           });
 //         },
 //         codeAutoRetrievalTimeout: (String verificationId) {
-         
+
 //         },
 //       );
 //     } catch (e) {

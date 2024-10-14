@@ -1,5 +1,5 @@
-
 import 'package:easyrsv/controller/signin%20_controller.dart';
+
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -10,6 +10,10 @@ class SignInPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final SignInController controller = Get.find();
+
+   
+    final TextEditingController emailController = TextEditingController();
+    final TextEditingController passwordController = TextEditingController();
 
     return Scaffold(
       backgroundColor: Colors.black,
@@ -25,8 +29,8 @@ class SignInPage extends StatelessWidget {
                   children: <Widget>[
                     Image.asset(
                       'assets/logo vector 2.png',
-                      width: 150,
-                      height: 150,
+                      width: 80,
+                      height: 80,
                       fit: BoxFit.cover,
                     ),
                     const Text(
@@ -47,7 +51,8 @@ class SignInPage extends StatelessWidget {
                   color: const Color(0xFF282828),
                   borderRadius: BorderRadius.circular(10),
                 ),
-                padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 20.0),
+                padding: const EdgeInsets.symmetric(
+                    horizontal: 20.0, vertical: 20.0),
                 margin: const EdgeInsets.symmetric(horizontal: 20),
                 child: Column(
                   children: <Widget>[
@@ -68,7 +73,7 @@ class SignInPage extends StatelessWidget {
                           'Email Address ',
                           style: TextStyle(
                             color: Color.fromARGB(255, 146, 143, 143),
-                            fontSize: 16,
+                            fontSize: 12,
                           ),
                         ),
                         Text(
@@ -77,13 +82,15 @@ class SignInPage extends StatelessWidget {
                         ),
                       ],
                     ),
-                    const SizedBox(height: 8),
+                    const SizedBox(height: 3),
                     // Email TextField
                     Row(
                       children: [
                         Expanded(
                           child: TextField(
-                            onChanged: (value) => controller.email.value = value,
+                            controller: emailController,
+                            style: const TextStyle(color: Colors.white),
+                            cursorColor: const Color(0xFFD6B560),
                             decoration: InputDecoration(
                               hintText: 'Enter your email address',
                               hintStyle: const TextStyle(
@@ -98,20 +105,19 @@ class SignInPage extends StatelessWidget {
                               contentPadding: const EdgeInsets.symmetric(
                                   vertical: 10, horizontal: 10),
                             ),
-                            cursorColor: Colors.white,
                             keyboardType: TextInputType.emailAddress,
                           ),
                         ),
                       ],
                     ),
-                    const SizedBox(height: 20),
+                    const SizedBox(height: 8),
                     const Row(
                       children: [
                         Text(
                           'Password ',
                           style: TextStyle(
                             color: Color.fromARGB(255, 127, 126, 126),
-                            fontSize: 16,
+                            fontSize: 12,
                           ),
                         ),
                         Text(
@@ -120,20 +126,24 @@ class SignInPage extends StatelessWidget {
                         ),
                       ],
                     ),
-                    const SizedBox(height: 8),
+                    const SizedBox(height: 3),
                     // Password TextField
                     Row(
                       children: [
                         Expanded(
                           child: Obx(
                             () => TextField(
-                              onChanged: (value) => controller.password.value = value,
-                              obscureText: controller.obscureText.value,
+                              controller: passwordController,
+                              style: const TextStyle(color: Colors.white),
+                              cursorColor: const Color(0xFFD6B560),
+                              obscureText: controller.obscureText
+                                  .value, // Updates based on obscureText
                               decoration: InputDecoration(
                                 hintText: 'Enter your password',
                                 hintStyle: const TextStyle(
-                                    color: Color.fromARGB(255, 127, 126, 126),
-                                    fontFamily: 'Inter'),
+                                  color: Color.fromARGB(255, 127, 126, 126),
+                                  fontFamily: 'Inter',
+                                ),
                                 filled: true,
                                 fillColor: const Color(0xFF4e4e4e),
                                 border: OutlineInputBorder(
@@ -141,7 +151,9 @@ class SignInPage extends StatelessWidget {
                                   borderSide: BorderSide.none,
                                 ),
                                 contentPadding: const EdgeInsets.symmetric(
-                                    vertical: 10, horizontal: 10),
+                                  vertical: 10,
+                                  horizontal: 10,
+                                ),
                                 suffixIcon: IconButton(
                                   icon: Icon(
                                     controller.obscureText.value
@@ -149,28 +161,30 @@ class SignInPage extends StatelessWidget {
                                         : Icons.visibility,
                                     color: const Color(0xFFD6B560),
                                   ),
-                                  onPressed: controller.toggleObscureText,
+                                  onPressed: controller
+                                      .toggleObscureText, // Toggles obscureText
                                 ),
                               ),
-                              cursorColor: Colors.white,
                             ),
                           ),
                         ),
                       ],
                     ),
+
                     const SizedBox(height: 20),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.end,
                       children: <Widget>[
                         InkWell(
                           onTap: () {
-                            Get.toNamed('resetpass');
+                            Get.toNamed('forgot');
                           },
                           child: const Text(
                             'Forgot Password',
                             style: TextStyle(
                               color: Color(0xFFD6B560),
                               fontWeight: FontWeight.bold,
+                              fontFamily: 'Outfit',
                             ),
                           ),
                         ),
@@ -178,32 +192,52 @@ class SignInPage extends StatelessWidget {
                     ),
                     const SizedBox(height: 20),
                     // Sign In Button
+                    // Sign In Button
                     SizedBox(
                       width: double.infinity,
-                      child: ElevatedButton(
-                        onPressed: controller.signIn, // Trigger the sign-in action
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFFD6B560),
-                          padding: const EdgeInsets.symmetric(vertical: 12),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10),
+                      child: Obx(() {
+                        return ElevatedButton(
+                          onPressed: controller.isLoading.value
+                              ? null // Disable button while loading
+                              : () {
+                                  controller.signIn(
+                                    emailController.text.trim(),
+                                    passwordController.text.trim(),
+                                  );
+                                },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: const Color(0xFFD6B560),
+                            padding: const EdgeInsets.symmetric(vertical: 5),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10),
+                            ),
                           ),
-                        ),
-                        child: const Text(
-                          'Sign In',
-                          style: TextStyle(
-                            color: Colors.black,
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
+                          child: controller.isLoading.value
+                              ? const SizedBox(
+                                  height: 30,
+                                  width: 30,
+                                  child: CircularProgressIndicator(
+                                    valueColor: AlwaysStoppedAnimation<Color>(
+                                        Color(0xFFD6B560)),
+                                    strokeWidth: 3.0,
+                                  ),
+                                )
+                              : const Text(
+                                  'Sign In',
+                                  style: TextStyle(
+                                    color: Colors.black,
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                        );
+                      }),
                     ),
                   ],
                 ),
               ),
               const SizedBox(height: 90),
-              // "Don't have an account?" RichText
+            
               Center(
                 child: RichText(
                   text: TextSpan(
