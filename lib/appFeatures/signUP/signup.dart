@@ -1,5 +1,6 @@
 
-import 'package:easyrsv/appfeature/Authentication/signUp/controller/signup_controller.dart';
+
+import 'package:easyrsv/features/concierge/signUp/controller/signUp_controller/signup_controller.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart'; // Import GetX

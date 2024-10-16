@@ -1,6 +1,7 @@
 // ignore_for_file: library_private_types_in_public_api, file_names
 
-import 'package:easyrsv/features/concierge/signUp/controller/Reset_password_controller.dart';
+import 'package:easyrsv/features/concierge/signUp/controller/forgotController/Reset_password_controller.dart';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 

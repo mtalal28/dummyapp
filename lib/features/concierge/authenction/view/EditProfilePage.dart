@@ -6,8 +6,9 @@ import 'dart:math';
 import 'package:country_code_picker/country_code_picker.dart';
 import 'package:easyrsv/features/admin/models/Profile_model.dart.dart';
 import 'package:easyrsv/services/ApiService.dart';
-import 'package:easyrsv/appfeature/utils/autospacing.dart';
-import 'package:easyrsv/appfeature/widget.dart/text_field_with_label.dart';
+import 'package:easyrsv/appFeatures/utils/autospacing.dart';
+import 'package:easyrsv/appFeatures/widget.dart/text_field_with_label.dart';
+
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';

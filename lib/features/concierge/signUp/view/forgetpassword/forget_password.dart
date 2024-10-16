@@ -1,6 +1,7 @@
 // ignore_for_file: library_private_types_in_public_api
 
-import 'package:easyrsv/features/concierge/signUp/controller/Forget_password_controller.dart';
+import 'package:easyrsv/features/concierge/signUp/controller/forgotController/Forget_password_controller.dart';
+
 import 'package:easyrsv/features/concierge/signUp/view/otp_vertication/ForgetVerification.dart';
 import 'package:easyrsv/services/ApiService.dart';
 import 'package:flutter/material.dart';
