@@ -1,10 +1,11 @@
 // ignore_for_file: file_names
 
 import 'dart:developer';
-
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+
+import 'package:shared_preferences/shared_preferences.dart';
 
 class ApiService {
   static const String baseUrl = 'https://conciergebooking.tijarah.ae/api/';
@@ -17,11 +18,15 @@ class ApiService {
   static const String approveConcierge = '${baseUrl}approve/user';
   static const String allapprovedConcierge = '${baseUrl}concierges';
   static const String updateprofile = '${baseUrl}update-profile';
+  static const String rejection ='${baseUrl}reject/request'; 
+  static const String approveduser = '${baseUrl}approve/user';
+
+  
 
 static Future<ApiResponse> loginemail(String email, String password) async {
   try {
     final response = await http.post(
-      Uri.parse('https://conciergebooking.tijarah.ae/api/user/login'),
+      Uri.parse('${baseUrl}user/login'),
       headers: {
         'Content-Type': 'application/json',
       },
@@ -38,23 +43,26 @@ static Future<ApiResponse> loginemail(String email, String password) async {
     if (response.statusCode == 200) {
       final jsonResponse = jsonDecode(response.body);
       log('Decoded response: $jsonResponse');
+      
 
       if (jsonResponse.containsKey('error')) {
         return ApiResponse(success: false, message: jsonResponse['error']);
       } else {
-        // Check if token and id exist and handle nullability
-        String? token = jsonResponse['token'] as String?; 
+        String? token = jsonResponse['token'] as String?;
         int? id = jsonResponse['user']['id'] as int?;
 
         log('User ID: $id');
         log('Token: $token');
 
-        // Return ApiResponse
+       
+        SharedPreferences prefs = await SharedPreferences.getInstance();
+        await prefs.setString('token', token ?? '');
+
         return ApiResponse(
-          success: true, 
-          message: jsonResponse['message'], 
-          token: token ?? '', // Provide a fallback value for nullable types
-          id: id ?? 0, // Provide a fallback value for nullable types
+          success: true,
+          message: jsonResponse['message'],
+          token: token ?? '',
+          id: id ?? 0,
         );
       }
     } else {
@@ -65,6 +73,7 @@ static Future<ApiResponse> loginemail(String email, String password) async {
     return ApiResponse(success: false, message: 'An error occurred');
   }
 }
+
 
 
   static Future<ApiResponse> sendEmailOTP(String email) async {
@@ -179,7 +188,15 @@ static Future<ApiResponse> unapprovedConcierges({
   String sortOrder = 'desc',
   String searchText = '',
 }) async {
-  final Uri apiUrl = Uri.parse('https://conciergebooking.tijarah.ae/api/requested/concierges').replace(
+  
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  String? token = prefs.getString('token');
+
+  if (token == null || token.isEmpty) {
+    return ApiResponse(success: false, message: 'User not logged in');
+  }
+
+  final Uri apiUrl = Uri.parse('${baseUrl}requested/concierges').replace(
     queryParameters: {
       'sort_by': sortBy,
       'sort_order': sortOrder,
@@ -191,19 +208,22 @@ static Future<ApiResponse> unapprovedConcierges({
     apiUrl,
     headers: {
       'Content-Type': 'application/json',
-      'Authorization': 'Bearer 1337|x40UJD2c1rmU1Bu59Jwv6EqjrfgY1tno5g61q7Pn95d7d8b4',
+      'Authorization': 'Bearer $token',
     },
   );
-  
+
   try {
-    // log('Response body: ${response.body}');
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
       log('Decoded data: ${response.statusCode}');
-      return ApiResponse(success: true, message: 'Fetched unapproved concierges successfully', data: data);
+      return ApiResponse(
+          success: true,
+          message: 'Fetched unapproved concierges successfully',
+          data: data);
     } else {
       log('Response body: ${response.statusCode}');
-      return ApiResponse(success: false, message: 'Failed to fetch unapproved concierges');
+      return ApiResponse(
+          success: false, message: 'Failed to fetch unapproved concierges');
     }
   } catch (e) {
     log('Error while parsing response: $e');
@@ -211,103 +231,116 @@ static Future<ApiResponse> unapprovedConcierges({
   }
 }
 
-static Future<ApiResponse> approveConcierges(int id, double commissionPercentage, dynamic widget, ) async {
-    try {
-      final response = await http.post(
-        Uri.parse('https://conciergebooking.tijarah.ae/api/approve/user'),
-        headers: {
-          'Content-Type': 'application/json',
-          "Accept": "application/json",
-          "Authorization" : " Bearer 1381|Rod2mLe4UlGaZr8mfWzvveKySUrQ4mAfo1dqhLOcec4309e0"
-        },
-        body: jsonEncode({
-          "user_id": widget.concierge[id].toString(),
-          "commission_percentage": "$commissionPercentage",
-        
-        }),
-      );
+static Future<ApiResponse> approveConcierges(
+    int id, double commissionPercentage) async {
 
-      // log(response.toString()); 
-      log("response ::::::::: ${response.body}");
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  String? token = prefs.getString('token');
 
-      if (response.statusCode == 200) {
-    
-        return ApiResponse(
-          message: "Concierge approved successfully",
-          success: true,
-        );
-      } else {
-       
-        return ApiResponse(
-          message: "Failed to approve concierge: ${response.body}",
-          success: false,
-        );
-      }
-    } catch (e) {
-      log("Error in approving concierge: $e");
+  log("Fetched Token: $token");
+
+  if (token == null || token.isEmpty) {
+    return ApiResponse(success: false, message: 'User not logged in');
+  }
+
+  try {
+    final response = await http.post(
+      Uri.parse('${baseUrl}approve/user'),
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+      body: jsonEncode({
+        "user_id": id.toString(), 
+
+        "commission_percentage": "$commissionPercentage",
+      }),
+    );
+
+    log("response :::::::::---- ${response.body}");
+
+    if (response.statusCode == 200) {
       return ApiResponse(
-        message: "Error occurred while approving concierge",
+        message: "Concierge approved successfully",
+        success: true,
+      );
+    } else {
+      return ApiResponse(
+        message: "Failed to approve concierge: ${response.body}",
         success: false,
       );
     }
+  } catch (e) {
+    log("Error in approving concierge: $e");
+    return ApiResponse(
+      message: "Error occurred while approving concierge",
+      success: false,
+    );
+  }
+}
+
+   static Future<ApiResponse> getApprovedConcierges({
+  String sortBy = 'name',
+  String sortOrder = 'asc',
+  String searchText = '',
+}) async {
+ 
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  String? token = prefs.getString('token');
+
+  if (token == null || token.isEmpty) {
+    return ApiResponse(success: false, message: 'User not logged in');
   }
 
-    static Future<ApiResponse> getApprovedConcierges({
-    String sortBy = 'name',  
-    String sortOrder = 'asc',       
-    String searchText = '',          
-  }) async {
-    try {
-      final uri = Uri.https(
-        'conciergebooking.tijarah.ae', 
-        '/api/concierges',
-        {
-          'sort_by': sortBy,
-          'sort_order': sortOrder,
-          'search_text': searchText,
-        },
-      );
+  try {
+    final uri = Uri.https(
+      'conciergebooking.tijarah.ae',
+      '/api/concierges',
+      {
+        'sort_by': sortBy,
+        'sort_order': sortOrder,
+        'search_text': searchText,
+      },
+    );
 
-      final response = await http.get(
-        uri,
-        headers: {
-          'Accept': 'application/json',
-          'Authorization': 'Bearer 1392|kL1S3uKteS033PkkhaHIMhrXEEN21BhqOZFpI0baa94e0010',
-        },
-      );
+    final response = await http.get(
+      uri,
+      headers: {
+        'Accept': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+    );
 
-      log("response ===== ${response.body}");
+    log("response ===== ${response.body}");
 
-      if (response.statusCode == 200) {
-       
-        final data = jsonDecode(response.body);
-        return ApiResponse(
-          message: "Concierges fetched successfully",
-          success: true,
-          data: data, 
-        );
-      } else {
-        // Handle error response
-        return ApiResponse(
-          message: "Failed to fetch concierges: ${response.body}",
-          success: false,
-        );
-      }
-    } catch (e) {
-      log("Error in fetching approved concierges: $e");
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body);
       return ApiResponse(
-        message: "Error occurred while fetching concierges",
+        message: "Concierges fetched successfully",
+        success: true,
+        data: data,
+      );
+    } else {
+      return ApiResponse(
+        message: "Failed to fetch concierges: ${response.body}",
         success: false,
       );
     }
+  } catch (e) {
+    log("Error in fetching approved concierges: $e");
+    return ApiResponse(
+      message: "Error occurred while fetching concierges",
+      success: false,
+    );
   }
+}
 
 
 static Future<ApiResponse> updateProfile({
-  required String id, 
+  required String id,
   required String firstName,
   required String lastName,
-  // required String email,
   required String waCode,
   required String waNumber,
   required String dob,
@@ -323,12 +356,19 @@ static Future<ApiResponse> updateProfile({
   String? partnershipAgreement,
   bool isEmailChanged = true,
 }) async {
+  
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  String? token = prefs.getString('token');
+
+  if (token == null || token.isEmpty) {
+    return ApiResponse(success: false, message: 'User not logged in');
+  }
+
   try {
     Map<String, dynamic> body = {
-      "id": id, 
+      "id": id,
       "first_name": firstName,
       "last_name": lastName,
-      // if (isEmailChanged) "email": email,
       "wa_code": waCode,
       "wa_number": waNumber,
       "dob": dob,
@@ -343,11 +383,11 @@ static Future<ApiResponse> updateProfile({
     };
 
     final response = await http.post(
-      Uri.parse('https://conciergebooking.tijarah.ae/api/update-profile'),
+      Uri.parse('${baseUrl}update-profile'),
       headers: {
         'Content-Type': 'application/json',
         'Accept': 'application/json',
-        'Authorization': 'Bearer 1591|UjPPkU3yq0XRa9MxYQCS13klTLjk5P5AnpdNgqJs481829eb',
+        'Authorization': 'Bearer $token',
       },
       body: jsonEncode(body),
     );
@@ -375,6 +415,101 @@ static Future<ApiResponse> updateProfile({
     );
   }
 }
+
+
+ static Future<ApiResponse> rejectConcierges(int id, String rejectionReason) async {
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  String? token = prefs.getString('token');
+  if (token == null || token.isEmpty) {
+    return ApiResponse(success: false, message: 'User not logged in');
+  }
+  try {
+    final response = await http.post(
+      Uri.parse('${baseUrl}reject/request'),
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+      body: jsonEncode({
+        "user_id": id.toString(),
+        "type": "concierge",
+        "rejection_reason": rejectionReason,
+      }),
+    );
+    if (response.statusCode == 200) {
+      return ApiResponse(
+        message: "Concierge rejected successfully",
+        success: true,
+      );
+    } else {
+      return ApiResponse(
+        message: "Failed to reject concierge: ${response.body}",
+        success: false,
+      );
+    }
+  } catch (e) {
+    return ApiResponse(
+      message: "Error occurred while rejecting concierge",
+      success: false,
+    );
+  }
+}
+
+static Future<ApiResponse> approveuser(
+      int userId, double commissionPercentage) async {
+
+
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? token = prefs.getString('token');
+
+    log("Fetched Token: $token");
+
+   
+    if (token == null || token.isEmpty) {
+      return ApiResponse(success: false, message: 'User not logged in');
+    }
+
+    try {
+    
+      final response = await http.post(
+        Uri.parse('${baseUrl}approve/user'),
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+        body: jsonEncode({
+          "user_id": userId,
+          "commission_percentage": commissionPercentage,
+         
+        }),
+      );
+
+      log("Response: ${response.body}");
+
+     
+      if (response.statusCode == 200) {
+        return ApiResponse(
+          message: "Concierge approved successfully",
+          success: true,
+        );
+      } else {
+        return ApiResponse(
+          message: "Failed to approve concierge: ${response.body}",
+          success: false,
+        );
+      }
+    } catch (e) {
+      log("Error in approving concierge: $e");
+      return ApiResponse(
+        message: "Error occurred while approving concierge",
+        success: false,
+      );
+    }
+  }
+
+
 
 
 }

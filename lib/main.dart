@@ -1,19 +1,19 @@
-import 'package:easyrsv/view/forgetpassword/PasswordConfirmationPage.dart';
-import 'package:easyrsv/view/forgetpassword/forget_password.dart';
-import 'package:easyrsv/view/login/AdminDashboardPage.dart';
-import 'package:easyrsv/view/login/confirmation.dart';
-import 'package:easyrsv/view/signup.dart';
+import 'package:easyrsv/features/concierge/signUp/view/forgetpassword/PasswordConfirmationPage.dart';
+import 'package:easyrsv/features/concierge/signUp/view/forgetpassword/forget_password.dart';
+import 'package:easyrsv/features/admin/view/AdminDashboardPage.dart';
+import 'package:easyrsv/features/concierge/authenction/view/confirmation.dart';
+import 'package:easyrsv/appfeature/Authentication/signUp/view/signup.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:easyrsv/view/otp_vertication/OtpVerification.dart';
-import 'package:easyrsv/view/forgetpassword/Reset.dart';
-import 'package:easyrsv/view/concierge/SignUpPage2.dart';
-import 'package:easyrsv/view/SplashScreen.dart';
-import 'package:easyrsv/view/concierge/conciergePage.dart';
-import 'package:easyrsv/controller/signin%20_controller.dart';
+import 'package:easyrsv/features/concierge/signUp/view/otp_vertication/OtpVerification.dart';
+import 'package:easyrsv/features/concierge/signUp/view/forgetpassword/Reset.dart';
+import 'package:easyrsv/features/concierge/signUp/view/conSignup/SignUpPage2.dart';
+import 'package:easyrsv/appfeature/SplashScreen.dart';
+import 'package:easyrsv/features/concierge/signUp/view/conSignup/conciergePage.dart';
+import 'package:easyrsv/appfeature/Authentication/signIn/controller/signin_controller.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'view/login/SignInPage.dart';
+import 'appfeature/Authentication/signIn/view/SignInPage.dart';
 
 void main() async {
 
