@@ -74,10 +74,10 @@ class _EditProfilePageState extends State<EditProfilePage> {
 
     if (pickedFile != null) {
       setState(() {
-        _image = File(pickedFile.path); // Convert pickedFile to File
+        _image = File(pickedFile.path); 
       });
 
-      // TODO: Upload the image to the server or perform any action after picking the image.
+      
     }
   }
 
@@ -620,7 +620,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                         controller: TextEditingController(
                           text: uploadedFilePath!.split('/').last,
                         ),
-                        readOnly: true, // Make it read-only
+                        readOnly: true,
                         decoration: InputDecoration(
                           filled: true,
                           fillColor: Colors.grey[850],
@@ -633,7 +633,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                           hintText: 'Uploaded File',
                           hintStyle: TextStyle(
                               color:
-                                  Colors.grey[400]), // Change hint text color
+                                  Colors.grey[400]), 
                           suffixIcon: IconButton(
                             icon: const Icon(Icons.close, color: Colors.red),
                             onPressed: _removeFile,

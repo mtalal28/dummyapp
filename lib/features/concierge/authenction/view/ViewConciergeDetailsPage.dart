@@ -1,38 +1,69 @@
-// ignore_for_file: must_be_immutable
+// ignore_for_file: must_be_immutable, unused_local_variable
 
+import 'dart:developer';
 
 import 'package:easyrsv/features/concierge/authenction/controller/update_controller.dart';
-
 import 'package:easyrsv/features/concierge/authenction/view/EditProfilePage.dart';
+import 'package:easyrsv/services/ApiService.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class ViewConciergeDetailsPage extends StatefulWidget {
-  late Map<String, dynamic> concierge;
-  final UpdateController updateController = Get.put(UpdateController());
+  final int conciergeId;
+  // final Map<String, dynamic> concierge;
 
-
-  ViewConciergeDetailsPage({Key? key, required this.concierge})
+  const ViewConciergeDetailsPage({Key? key, required this.conciergeId})
       : super(key: key);
 
   @override
   State<ViewConciergeDetailsPage> createState() =>
       _ViewConciergeDetailsPageState();
-
-      
 }
 
 class _ViewConciergeDetailsPageState extends State<ViewConciergeDetailsPage> {
   final TextEditingController _commissionController = TextEditingController();
+  final UpdateController updateController = Get.put(UpdateController());
 
+  bool isActive = false;
+   Map<String, dynamic> concierge = {};
+   bool isLoading = false;
 
-   
-
-
+  
   @override
   void initState() {
     super.initState();
+    getConciergeDetails();
+     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+        getConciergeDetails();
+     },);
   }
+   
+  Future<void> getConciergeDetails() async {
+  int? id = widget.conciergeId;
+    // try {
+      setState(() {
+        isLoading = true;
+      });
+      
+      final response = await ApiService.getconciergedetails(id);
+      
+     
+      // final details = jsonDecode(response.data);
+      
+      log("details::::: ${response.data}");
+   
+      setState(() {
+        isLoading = false;
+        concierge = response.data; 
+        isActive = concierge['user']['is_active'] == 1;
+      });
+    // } catch (e) {
+      
+    //   print('Error fetching concierge details: $e');
+    // }
+}
+
+  
 
   @override
   void dispose() {
@@ -40,19 +71,19 @@ class _ViewConciergeDetailsPageState extends State<ViewConciergeDetailsPage> {
     super.dispose();
   }
 
-  
-
-@override
+  @override
   Widget build(BuildContext context) {
-    int? id = widget.concierge['id']; 
-    // ignore: unused_local_variable
-    double commissionPercentage = 15.0; 
+    // int? id = concierge['user']['id'];
 
-    if (id == null) {
+    double commissionPercentage = 1;
+
+    if (isLoading) {
       return const Center(
-        child: Text('Invalid User ID'),
+        child: CircularProgressIndicator(),
       );
     }
+
+    
 
     return Scaffold(
       backgroundColor: Colors.black,
@@ -106,17 +137,17 @@ class _ViewConciergeDetailsPageState extends State<ViewConciergeDetailsPage> {
                             ),
                           ),
                           onPressed: () async {
-                            int? id = widget.concierge['id'];
+                            int? id = concierge['id'];
 
                             final updatedConcierge =
                                 await Get.to(() => EditProfilePage(
-                                      concierge: widget.concierge,
+                                      concierge: concierge,
                                       userId: id,
                                     ));
 
                             if (updatedConcierge != null) {
                               setState(() {
-                                widget.concierge = updatedConcierge;
+                                concierge = updatedConcierge;
                               });
                             }
                           },
@@ -135,11 +166,11 @@ class _ViewConciergeDetailsPageState extends State<ViewConciergeDetailsPage> {
                       ],
                     ),
                     const SizedBox(height: 16),
-                    widget.concierge['profile_picture'] != null
+                    concierge['profile_picture'] != null
                         ? CircleAvatar(
                             radius: 50,
                             backgroundImage: NetworkImage(
-                                widget.concierge['profile_picture']),
+                                concierge['user']['profile_picture']),
                           )
                         : const CircleAvatar(
                             radius: 50,
@@ -147,25 +178,30 @@ class _ViewConciergeDetailsPageState extends State<ViewConciergeDetailsPage> {
                             child: Icon(Icons.person,
                                 color: Colors.white, size: 40),
                           ),
-                     const SizedBox(height: 12),
+                    const SizedBox(height: 12),
                     Text(
-                      '${widget.concierge['first_name']} ${widget.concierge['last_name']}',
+                      '${concierge['user']['first_name']} ${concierge['user']['last_name']}',
                       style: const TextStyle(
                         color: Colors.black,
                         fontSize: 24,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-
-                      Text(widget.concierge['email'] ?? 'N/A',
-                          style: const TextStyle(
-                              color: Colors.black, fontSize: 12, fontWeight:FontWeight.w700)),
+                    Text(concierge['user']['email'] ?? 'N/A',
+                        style: const TextStyle(
+                            color: Colors.black,
+                            fontSize: 12,
+                            fontWeight: FontWeight.w700)),
+                    const SizedBox(height: 12),
+                   
+                        buildActiveInactiveToggle()
+                    
+                  
                   ],
                 ),
               ),
             ),
             const SizedBox(height: 4),
-
             Padding(
               padding: const EdgeInsets.all(10.0),
               child: Row(
@@ -176,7 +212,7 @@ class _ViewConciergeDetailsPageState extends State<ViewConciergeDetailsPage> {
                     children: [
                       const Text('Business Name:',
                           style: TextStyle(color: Colors.grey)),
-                      Text(widget.concierge['business_name'] ?? 'No business',
+                      Text(concierge['user']['business_name'] ?? 'No business',
                           style: const TextStyle(color: Colors.white)),
                     ],
                   ),
@@ -187,18 +223,14 @@ class _ViewConciergeDetailsPageState extends State<ViewConciergeDetailsPage> {
                       const Text('Full Name:',
                           style: TextStyle(color: Colors.grey)),
                       Text(
-                          '${widget.concierge['first_name']} ${widget.concierge['last_name'] ?? 'N/A'}',
+                          '${concierge['user']['first_name']} ${concierge['user']['last_name'] ?? 'N/A'}',
                           style: const TextStyle(color: Colors.white)),
-                          
                     ],
-                    
                   ),
                 ],
               ),
             ),
             const SizedBox(height: 1),
-
-           
             Padding(
               padding: const EdgeInsets.all(10.0),
               child: Row(
@@ -210,7 +242,7 @@ class _ViewConciergeDetailsPageState extends State<ViewConciergeDetailsPage> {
                       const Text('Mobile:',
                           style: TextStyle(color: Colors.white70)),
                       Text(
-                          '+${widget.concierge['mobile_code'] ?? 'N/A'}-${widget.concierge['mobile_number'] ?? 'N/A'}',
+                          '+${concierge['user']['mobile_code'] ?? 'N/A'}-${concierge['user']['mobile_number'] ?? 'N/A'}',
                           style: const TextStyle(
                               color: Colors.white, fontSize: 12)),
                     ],
@@ -221,7 +253,7 @@ class _ViewConciergeDetailsPageState extends State<ViewConciergeDetailsPage> {
                     children: [
                       const Text('Date of Birth:',
                           style: TextStyle(color: Colors.white70)),
-                      Text(widget.concierge['dob'] ?? 'N/A',
+                      Text(concierge['user']['dob'] ?? 'N/A',
                           style: const TextStyle(color: Colors.white)),
                     ],
                   ),
@@ -229,8 +261,6 @@ class _ViewConciergeDetailsPageState extends State<ViewConciergeDetailsPage> {
               ),
             ),
             const SizedBox(height: 1),
-
-            // Email and Joining Date Section
             Padding(
               padding: const EdgeInsets.all(10.0),
               child: Row(
@@ -243,7 +273,7 @@ class _ViewConciergeDetailsPageState extends State<ViewConciergeDetailsPage> {
                           style: TextStyle(
                             color: Colors.white70,
                           )),
-                      Text(widget.concierge['email'] ?? 'N/A',
+                      Text(concierge['user']['email'] ?? 'N/A',
                           style: const TextStyle(
                               color: Colors.white, fontSize: 12)),
                     ],
@@ -254,7 +284,7 @@ class _ViewConciergeDetailsPageState extends State<ViewConciergeDetailsPage> {
                     children: [
                       const Text('Joining Date:',
                           style: TextStyle(color: Colors.white70)),
-                      Text(widget.concierge['dob'] ?? 'N/A',
+                      Text(concierge['user']['dob'] ?? 'N/A',
                           style: const TextStyle(color: Colors.white)),
                     ],
                   ),
@@ -263,8 +293,6 @@ class _ViewConciergeDetailsPageState extends State<ViewConciergeDetailsPage> {
             ),
             const SizedBox(height: 0),
             const Divider(color: Colors.grey),
-
-            // Payment and Bank Information Section
             Padding(
               padding: const EdgeInsets.all(10.0),
               child: Row(
@@ -275,7 +303,7 @@ class _ViewConciergeDetailsPageState extends State<ViewConciergeDetailsPage> {
                     children: [
                       const Text('Payment Method:',
                           style: TextStyle(color: Colors.white70)),
-                      Text(widget.concierge['payment_method'] ?? 'N/A',
+                      Text(concierge['user']['payment_method'] ?? 'N/A',
                           style: const TextStyle(color: Colors.white)),
                     ],
                   ),
@@ -290,12 +318,11 @@ class _ViewConciergeDetailsPageState extends State<ViewConciergeDetailsPage> {
                 children: [
                   const Text('Bank Name:',
                       style: TextStyle(color: Colors.white70)),
-                  Text(widget.concierge['bank_name'] ?? 'N/A',
+                  Text(concierge['user']['bank_name'] ?? 'N/A',
                       style: const TextStyle(color: Colors.white)),
                 ],
               ),
             ),
-
             Padding(
               padding: const EdgeInsets.all(10.0),
               child: Row(
@@ -306,7 +333,7 @@ class _ViewConciergeDetailsPageState extends State<ViewConciergeDetailsPage> {
                     children: [
                       const Text('Account IBAN:',
                           style: TextStyle(color: Colors.white70)),
-                      Text(widget.concierge['account_iban'] ?? 'N/A',
+                      Text(concierge['user']['account_iban'] ?? 'N/A',
                           style: const TextStyle(color: Colors.white)),
                     ],
                   ),
@@ -316,7 +343,7 @@ class _ViewConciergeDetailsPageState extends State<ViewConciergeDetailsPage> {
                     children: [
                       const Text('Account Title:',
                           style: TextStyle(color: Colors.white70)),
-                      Text(widget.concierge['account_title'] ?? 'N/A',
+                      Text(concierge['user']['account_title'] ?? 'N/A',
                           style: const TextStyle(color: Colors.white)),
                     ],
                   ),
@@ -324,7 +351,6 @@ class _ViewConciergeDetailsPageState extends State<ViewConciergeDetailsPage> {
               ),
             ),
             const SizedBox(height: 0),
-
             const Padding(
               padding: EdgeInsets.all(10.0),
               child: Text('Commission Structure',
@@ -345,7 +371,7 @@ class _ViewConciergeDetailsPageState extends State<ViewConciergeDetailsPage> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      '${widget.concierge['business_name'] ?? 'N/A'}',
+                      '${concierge['user']['business_name'] ?? 'N/A'}',
                       style: const TextStyle(color: Colors.white),
                     ),
                     const SizedBox(height: 8),
@@ -406,27 +432,30 @@ class _ViewConciergeDetailsPageState extends State<ViewConciergeDetailsPage> {
               ),
             ),
             const SizedBox(height: 0),
-
-             Center(
+            Center(
               child: Obx(() => ElevatedButton(
-                    onPressed: widget.updateController.isLoading.value
-                        ? null 
+                    onPressed: updateController.isLoading.value
+                        ? null
                         : () async {
-                            int? id = widget.concierge['id'];
+                            int? id = concierge['user']['id'];
                             if (id != null) {
-                              double commissionPercentage = double.tryParse(_commissionController.text) ?? 15.0;
-                              widget.updateController.approveUser(id, commissionPercentage);
+                              double commissionPercentage =
+                                  double.tryParse(_commissionController.text) ??
+                                      1.0;
+                              updateController
+                                  .approveUser(id, commissionPercentage);
                             }
                           },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xFFD6B560),
-                      padding: const EdgeInsets.symmetric(horizontal: 130, vertical: 5),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 130, vertical: 5),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(10),
                       ),
                     ),
-                    child: widget.updateController.isLoading.value
-                        ? CircularProgressIndicator(color: Colors.black)
+                    child: updateController.isLoading.value
+                        ? const CircularProgressIndicator(color: Colors.black)
                         : const Text(
                             'Update',
                             style: TextStyle(color: Colors.black),
@@ -438,4 +467,90 @@ class _ViewConciergeDetailsPageState extends State<ViewConciergeDetailsPage> {
       ),
     );
   }
+
+Widget buildActiveInactiveToggle() {
+  return Row(
+    mainAxisAlignment: MainAxisAlignment.center,
+    children: [
+      const SizedBox(width: 10),
+      Switch(
+        value: isActive,
+        onChanged: (bool value) {
+          if (isActive != value) {
+            showDialog(
+              context: context,
+              builder: (BuildContext context) {
+                return AlertDialog(
+                  backgroundColor: const Color.fromARGB(255, 48, 43, 43),
+                  content: const Text(
+                    "Are you sure you want to de-activate this?",
+                    style: TextStyle(color: Colors.white),
+                  ),
+                  actions: [
+                  
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        TextButton(
+                          onPressed: () {
+
+                            Get.back();
+                          },
+                          style: TextButton.styleFrom(
+                            foregroundColor: const Color(0xFFD6B560),
+                            side: const BorderSide(color: Color(0xFFD6B560)),
+                            minimumSize: const Size(100, 40),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                          ),
+                          child: const Text("No"),
+                        ),
+                        const SizedBox(width: 10), 
+                        TextButton(
+                          onPressed: () async{
+                            await ApiService.toggleUserCall(concierge['user']['id']);
+
+                              getConciergeDetails();
+                            // setState(() {
+                         
+                            //   isActive = value;
+                                 
+                            // });
+                            Get.back();
+                          },
+                          style: TextButton.styleFrom(
+                            backgroundColor: const Color(0xFFD6B560),
+                            foregroundColor: Colors.black,
+                            minimumSize: const Size(100, 40),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                          ),
+                          child: const Text("Yes"),
+                        ),
+                      ],
+                    ),
+                  ],
+                );
+              },
+            );
+          } else {
+            getConciergeDetails().then((_) {
+              setState(() {
+                isActive = value; 
+              });
+            }).catchError((error) {
+             
+              log('Error fetching concierge details: $error');
+            });
+          }
+        },
+        activeTrackColor: Colors.grey[900],
+        inactiveThumbColor: Colors.grey,
+        inactiveTrackColor: Colors.grey[900],
+      ),
+    ],
+  );
+}
 }

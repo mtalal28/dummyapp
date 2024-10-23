@@ -9,9 +9,10 @@ import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AdminDashboardController extends GetxController {
-  var approvedConcierges = [].obs; 
+  var approvedConcierges = <Map<String, dynamic>>[].obs; 
   var unapprovedConcierges =  <dynamic>[].obs;  
   RxBool isLoading = false.obs; 
+
 
   @override
   void onInit() {
@@ -21,18 +22,25 @@ class AdminDashboardController extends GetxController {
   }
 
   
-  Future<void> fetchApprovedConcierges() async {
+    Future<void> fetchApprovedConcierges() async {
     isLoading.value = true;
     ApiResponse response = await ApiService.getApprovedConcierges();
     
     if (response.success) {
-      approvedConcierges.value = response.data['concierges'] ?? [];
+      
+      List<Map<String, dynamic>> concierges = List<Map<String, dynamic>>.from(response.data['concierges'] ?? []);
+      approvedConcierges.assignAll(concierges);
     } else {
-      Get.snackbar('Error', response.message, snackPosition: SnackPosition.TOP, backgroundColor: Colors.red, colorText: Colors.white);
+      Get.snackbar(
+        'Error',
+        response.message,
+        snackPosition: SnackPosition.TOP,
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+      );
     }
     isLoading.value = false;
   }
-
 //  Future<void> fetchUnapprovedConcierges() async {
 //     try {
 //       final response = await http.get(Uri.parse('https://conciergebooking.tijarah.ae/api/requested/concierges'));
@@ -70,7 +78,7 @@ class AdminDashboardController extends GetxController {
    SharedPreferences prefs = await SharedPreferences.getInstance();
   String? token = prefs.getString('token');
   
-  print("method unapproved called");
+  log("method unapproved called");
     final response = await http.get(Uri.parse('https://conciergebooking.tijarah.ae/api/requested/concierges'),headers: {
       'Content-Type': 'application/json',
       'Authorization': 'Bearer $token',

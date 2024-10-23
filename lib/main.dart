@@ -1,5 +1,6 @@
 import 'package:easyrsv/appFeatures/authenction/signIn/view/SignInPage.dart';
 import 'package:easyrsv/appFeatures/splash/SplashScreen.dart';
+import 'package:easyrsv/features/Restaurant/authentication/signUp/view/signUpBusiness.dart';
 import 'package:easyrsv/features/concierge/signUp/view/forgetpassword/PasswordConfirmationPage.dart';
 import 'package:easyrsv/features/concierge/signUp/view/forgetpassword/forget_password.dart';
 import 'package:easyrsv/features/admin/view/AdminDashboardPage.dart';
@@ -57,7 +58,7 @@ class MyApp extends StatelessWidget {
       initialRoute: initialRoute,
       routes: {
         'first': (context) => const SplashScreen(),
-        'signIn': (context) => const SignInPage(),
+        'signIn': (context) => const Signinpage(),
         '/signup': (context) => Signup(),
          'forgot':(context)=> const ForgetPasswordPage(),
         'resetpass': (context) => const ResetPasswordPage(),
@@ -68,6 +69,7 @@ class MyApp extends StatelessWidget {
          '/confirmation':(context) => const ConfirmationPage(), 
          'passConfirm':(context)=> const PasswordConfirmationPage(),
          'admin': (context) => const AdminDashboardPage(),
+         'restaurantPage': (context) =>  const BusinessSignUpPage(),
          
        
       },

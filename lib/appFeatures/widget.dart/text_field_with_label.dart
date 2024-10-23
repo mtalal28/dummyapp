@@ -33,7 +33,7 @@ class TextFieldWithLabel extends StatelessWidget {
           children: [
             Text(
               label,
-              style: const TextStyle(color: Colors.white),
+              style: const TextStyle(color: Colors.grey, fontSize: 12),
             ),
             if (isMandatory)
               const Text(
@@ -50,17 +50,18 @@ class TextFieldWithLabel extends StatelessWidget {
           inputFormatters: inputFormatters,
           onChanged: onChanged,
           style: const TextStyle(color: Colors.white),
-          decoration: InputDecoration(
+            decoration: InputDecoration(
+            contentPadding: const EdgeInsets.symmetric(vertical: 10, horizontal: 12),
             hintText: hint,
-            hintStyle: const TextStyle(color: Colors.grey),
+            hintStyle: const TextStyle(color: Colors.grey, fontSize: 12), 
             filled: true,
-            fillColor: const Color(0xFF282828),
+            fillColor: const Color(0xFF2A2A2A), 
             border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(10),
+              borderRadius: BorderRadius.circular(8.0),
               borderSide: BorderSide.none,
             ),
           ),
-        ),
+          ),
         const SizedBox(height: 20),
       ],
     );

@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 
 class UpdateController extends GetxController {
   RxBool isLoading = false.obs;
+  
 
   
   Future<void> approveUser(int userId, double commissionPercentage) async {

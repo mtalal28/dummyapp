@@ -1,11 +1,17 @@
+// ignore_for_file: must_be_immutable
+
+import 'package:easyrsv/features/admin/contoller/admin_dashboard_controller.dart';
+import 'package:easyrsv/features/concierge/authenction/view/ViewBookingConciergePage.dart';
 import 'package:easyrsv/features/concierge/authenction/view/ViewConciergeDetailsPage.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class ApprovedConciergePage extends StatelessWidget {
-  final List approvedConcierges;
+  List<Map<String, dynamic>> approvedConcierges;
+  final AdminDashboardController adminDashboardController =
+      Get.put(AdminDashboardController());
 
-  const ApprovedConciergePage({Key? key, required this.approvedConcierges})
+  ApprovedConciergePage({Key? key, required this.approvedConcierges})
       : super(key: key);
 
   @override
@@ -265,9 +271,15 @@ class ApprovedConciergePage extends StatelessWidget {
                               ),
                             ),
                           ),
-                          onPressed: () {
-                            Get.to(() =>
-                                ViewConciergeDetailsPage(concierge: concierge));
+                          onPressed: () async {
+                            // ApiResponse response = await ApiService.getconciergedetails(concierge['id']);
+
+                            // if (response.success) {
+
+                              Get.to(() => ViewConciergeDetailsPage(conciergeId: concierge['id'],));
+                            // } else {
+                            //   Get.snackbar('Error', response.message);
+                            // }
                           },
                           child: const Text(
                             'View & edit profile',
@@ -286,7 +298,7 @@ class ApprovedConciergePage extends StatelessWidget {
                               ),
                             ),
                             onPressed: () {
-                              // View booking logic
+                              Get.to(() => ViewBookingConciergePage(conciergeId: concierge['id']));
                             },
                             child: const Text(
                               'View Booking',

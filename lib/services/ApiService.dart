@@ -1,6 +1,7 @@
 // ignore_for_file: file_names
 
 import 'dart:developer';
+import 'package:easyrsv/features/concierge/authenction/model/booking_model.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -20,6 +21,15 @@ class ApiService {
   static const String updateprofile = '${baseUrl}update-profile';
   static const String rejection ='${baseUrl}reject/request'; 
   static const String approveduser = '${baseUrl}approve/user';
+  static const String toggleUser = '${baseUrl}toogle/user/status';
+   static String getConciergeDetails(int userId) {
+    return '${baseUrl}concierger/details?user_id=$userId'; 
+  }
+ String getBookingDetails(int userId, int page) {
+  return '${baseUrl}get_bookings_by_id?user_id=$userId&page=$page';
+}
+
+
 
   
 
@@ -508,18 +518,137 @@ static Future<ApiResponse> approveuser(
       );
     }
   }
+  
+ static Future<ApiResponse> getconciergedetails(int userId) async {
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  String? token = prefs.getString('token');
 
+  if (token == null || token.isEmpty) {
+    log('Error: User not logged in. Token is missing.');
+    return ApiResponse(success: false, message: 'User not logged in');
+  }
 
+  try {
+    final Uri apiUrl = Uri.parse(getConciergeDetails(userId));
+    log('Fetching concierge details from: $apiUrl');
 
+    final response = await http.get(
+      apiUrl,
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+    );
 
+    log('Response status: ${response.statusCode}');
+    log('Response body: ${response.body}');
+
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body);
+      log('Concierge details fetched successfully: $data');
+      return ApiResponse(
+        success: true,
+        message: 'Concierge details fetched successfully',
+        data: data,
+      );
+    } else {
+      log('Error: Failed to fetch concierge details. Status code: ${response.statusCode}, Body: ${response.body}');
+      return ApiResponse(
+        success: false,
+        message: 'Failed to fetch concierge details',
+      );
+    }
+  } catch (e) {
+    log('Error while fetching concierge details: $e');
+    return ApiResponse(
+      success: false,
+      message: 'An error occurred: $e',
+    );
+  }
 }
 
 
+static Future<ApiResponse> toggleUserCall(int userId) async {
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  String? token = prefs.getString('token');
+
+  if (token == null || token.isEmpty) {
+    log('Error: User not logged in. Token is missing.');
+    return ApiResponse(success: false, message: 'User not logged in');
+  }
+
+  try {
+    final Uri apiUrl = Uri.parse(toggleUser);
+    log('Fetching concierge details from: $apiUrl');
+
+    final response = await http.post(
+      apiUrl,
+      headers: {
+        // 'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+      body: {"user_id" : userId.toString()}
+    );
+
+    log('Response status: ${response.statusCode}');
+    log('Response body: ${response.body}');
+
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body);
+      log('Concierge details fetched successfully: $data');
+      return ApiResponse(
+        success: true,
+        message: 'Concierge details fetched successfully',
+        data: data,
+      );
+    } else {
+      log('Error: Failed to fetch concierge details. Status code: ${response.statusCode}, Body: ${response.body}');
+      return ApiResponse(
+        success: false,
+        message: 'Failed to fetch concierge details',
+      );
+    }
+  } catch (e) {
+    log('Error while fetching concierge details: $e');
+    return ApiResponse(
+      success: false,
+      message: 'An error occurred: $e',
+    );
+  }
+}
+  static Future<List<Booking>> getBookingsById(int userId, int page) async {
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  String? token = prefs.getString('token');
+
+  if (token == null || token.isEmpty) {
+    throw Exception('User not logged in. Token is missing.');
+  }
+
+  final response = await http.get(
+    Uri.parse('https://conciergebooking.tijarah.ae/api/get_bookings_by_id?user_id=$userId&page=$page'),
+    headers: {
+      'Authorization': 'Bearer $token',
+    },
+  );
+
+  if (response.statusCode == 200) {
+    final Map<String, dynamic> jsonResponse = json.decode(response.body);
+   
+log("data ::::: ${jsonResponse}");
+
+    if (jsonResponse['reservations'] != null) { 
+      List bookingsJson = jsonResponse['reservations'];
+      return bookingsJson.map((booking) => Booking.fromJson(booking)).toList();
+    } else {
+      throw Exception('No bookings found in the response.');
+    }
+  } else {
+    throw Exception('Failed to load booking details: ${response.statusCode}');
+  }
+}
 
 
-
-
-
+}
 class ApiResponse {
   final bool success;
   final String message;
